@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  fastapi:
+    build: ./fast_api/  # Ensure the correct path
+    ports:
+      - "8000:8000"
+    networks:
+      - deploy_network
+    container_name: fastapi
+    restart: unless-stopped  # Auto-restart on failures
+    volumes:
+      - ./fast_api/app/image_rag:/FastAPI/app/image_rag  # Persist image_rag folder
+
+  streamlit:
+    build: ./Streamlit/  # Ensure the correct path
+    depends_on:
+      - fastapi
+    ports:
+      - "8501:8501"
+    networks:
+      - deploy_network
+    container_name: streamlit
+    restart: unless-stopped  # Auto-restart on failures
+
+networks:
+  deploy_network:
+
+volumes:
+  fastapi_data:  # Named volume for persistent storage
